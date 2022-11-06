@@ -21,6 +21,13 @@ defmodule HnBookshelfWeb.Router do
 
     get "/", PageController, :index
     live "/demo", Demo
+
+    live "/post", PostLive.Index, :index
+    live "/post/new", PostLive.Index, :new
+    live "/post/:id/edit", PostLive.Index, :edit
+
+    live "/post/:id", PostLive.Show, :show
+    live "/post/:id/show/edit", PostLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
@@ -60,7 +67,7 @@ defmodule HnBookshelfWeb.Router do
   if Mix.env() == :dev do
     scope "/" do
       pipe_through :browser
-      surface_catalogue "/catalogue"
+      surface_catalogue("/catalogue")
     end
   end
 end

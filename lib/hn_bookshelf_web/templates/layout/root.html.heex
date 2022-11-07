@@ -10,20 +10,29 @@
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
   <body>
-    <header>
-      <section class="container">
-        <h1 class="text-3xl font-bold underline">Hello world!</h1>
-        <nav>
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
-            <% end %>
-          </ul>
+    <header class="m-2" >
+      <section class="container m-2 mx-auto w-[85%]">
+        <nav class="bg-hn-orange flex flex-row content-center place-items-center p-0.5">
+          <div class="place-self-center  mr-1">
+            <img class="border border-white" src={Routes.static_path(@conn, "/images/y_combinator_logo.gif")}/>
+          </div>
+          <span class="inline-flex">
+            <b class="mr-2 font-hn text-[10pt]">Hacker News</b>
+            <p class="font-hn text-[10pt]">new | threads | past | comments | ask | show | jobs | submit</p>
+          </span>
+          <div>
+            
+          </div>
+          <div class="font-hn text-[10pt] ml-auto pr-1">
+            login
+          </div>
         </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src={Routes.static_path(@conn, "/images/phoenix.png")} alt="Phoenix Framework Logo"/>
-        </a>
+        <div class="bg-hn-grey flex flex-col">
+          <div>
+            Hello There
+          </div>
+        </div>
+        
       </section>
     </header>
     <%= @inner_content %>

@@ -10,7 +10,17 @@ module.exports = {
     '../lib/*_web/**/*.*ex'
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "hn": {
+          "grey": "#f6f6f0",
+          "orange": "#ff6600"
+        }
+      },
+      fontFamily: {
+        "hn" : ["Verdana", "Geneva", "sans-serif"]
+      }
+    }
   },
   plugins: [
     require('@tailwindcss/forms'),

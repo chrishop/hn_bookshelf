@@ -13,7 +13,8 @@ module.exports = {
     extend: {
       colors: {
         "hn": {
-          "grey": "#f6f6f0",
+          "grey-1": "#f6f6f0",
+          "grey-2": "#828282",
           "orange": "#ff6600"
         }
       },

@@ -17,19 +17,34 @@
             <img class="border border-white" src={Routes.static_path(@conn, "/images/y_combinator_logo.gif")}/>
           </div>
           <span class="inline-flex">
-            <b class="mr-2 font-hn text-[10pt]">Hacker News</b>
+            <b class="mr-[10px] font-hn text-[10pt]">Hacker News</b>
             <p class="font-hn text-[10pt]">new | threads | past | comments | ask | show | jobs | submit</p>
           </span>
-          <div>
-            
-          </div>
           <div class="font-hn text-[10pt] ml-auto pr-1">
             login
           </div>
         </nav>
-        <div class="bg-hn-grey flex flex-col">
-          <div>
-            Hello There
+        
+        <div class="bg-hn-grey-1 flex flex-col pl-2">
+          <div class="h-[10px]"></div>
+          <div class="flex flex-col">
+            <div class="flex flex-row">
+              <div class="text-hn-grey-2 text-[10pt] font-hn"> 1.</div>
+              <div class="self-center ml-1">
+                <img class="w-[10px] h-[10px]" src={Routes.static_path(@conn, "/images/hn_upvote_arrow.gif")}/>
+              </div>
+              <div class="text-[10pt] font-hn ml-1">
+                <a>Apple Execs on iMessage for Android (2013)</a>
+              </div>
+              <div class="self-end text-[8pt] font-hn text-hn-grey-2 ml-1">
+                <a>(twitter.com/techemails)</a>
+              </div>
+            </div>
+          </div>
+          <div class="text-[7pt] font-hn text-hn-grey-2 ml-8">
+            94 points by mfiguiere 1 hour ago | hide | 85 comments
+          </div>
+          <div class="h-[5px]">
           </div>
         </div>
         

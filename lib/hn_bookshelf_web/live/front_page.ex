@@ -7,7 +7,10 @@ defmodule HnBookshelfWeb.FrontPage do
   def render(assigns) do
     ~F"""
     <Nav/>
-    <Post/>
+    <div class="h-[10px] bg-hn-grey-1"></div>
+    {#for i <- 1..30}
+      <Post post_no={i}/>
+    {/for}
     """
   end
 

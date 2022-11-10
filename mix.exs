@@ -45,7 +45,7 @@ defmodule HnBookshelf.MixProject do
       # Phoenix 1.6.15 supports live view 0.17.5, but surface 0.9.0 supports
       # live view version 0.18. To fix this we are using surface 0.8.4
       {:surface, "~> 0.8.4"},
-      {:floki, ">= 0.30.0", only: :test},
+      {:floki, ">= 0.30.0"},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},

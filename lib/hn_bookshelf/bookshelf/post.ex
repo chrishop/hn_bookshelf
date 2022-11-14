@@ -19,7 +19,17 @@ defmodule HnBookshelf.Bookshelf.Post do
   @doc false
   def changeset(post, attrs) do
     post
-    |> cast(attrs, [:hn_id, :title, :post_url, :author, :comment_number, :points, :virtual_path, :date_added, :date_modified])
-    |> validate_required([:hn_id, :title, :post_url, :author, :comment_number, :points, :virtual_path, :date_added, :date_modified])
+    |> cast(attrs, [
+      :hn_id,
+      :title,
+      :post_url,
+      :author,
+      :comment_number,
+      :points,
+      :virtual_path,
+      :date_added,
+      :date_modified
+    ])
+    |> validate_required([:title, :post_url, :date_added, :date_modified])
   end
 end

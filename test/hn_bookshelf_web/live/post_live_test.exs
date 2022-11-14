@@ -4,9 +4,9 @@ defmodule HnBookshelfWeb.PostLiveTest do
   import Phoenix.LiveViewTest
   import HnBookshelf.BookshelfFixtures
 
-  @create_attrs %{hn_id: 42, post_url: "some post_url", title: "some title"}
-  @update_attrs %{hn_id: 43, post_url: "some updated post_url", title: "some updated title"}
-  @invalid_attrs %{hn_id: nil, post_url: nil, title: nil}
+  @create_attrs %{author: "some author", comment_number: 42, date_added: %{day: 13, hour: 6, minute: 46, month: 11, year: 2022}, date_modified: %{day: 13, hour: 6, minute: 46, month: 11, year: 2022}, hn_id: 42, points: 42, post_url: "some post_url", title: "some title", virtual_path: "some virtual_path"}
+  @update_attrs %{author: "some updated author", comment_number: 43, date_added: %{day: 14, hour: 6, minute: 46, month: 11, year: 2022}, date_modified: %{day: 14, hour: 6, minute: 46, month: 11, year: 2022}, hn_id: 43, points: 43, post_url: "some updated post_url", title: "some updated title", virtual_path: "some updated virtual_path"}
+  @invalid_attrs %{author: nil, comment_number: nil, date_added: %{day: 30, hour: 6, minute: 46, month: 2, year: 2022}, date_modified: %{day: 30, hour: 6, minute: 46, month: 2, year: 2022}, hn_id: nil, points: nil, post_url: nil, title: nil, virtual_path: nil}
 
   defp create_post(_) do
     post = post_fixture()
@@ -20,7 +20,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
       {:ok, _index_live, html} = live(conn, Routes.post_index_path(conn, :index))
 
       assert html =~ "Listing Post"
-      assert html =~ post.post_url
+      assert html =~ post.author
     end
 
     test "saves new post", %{conn: conn} do
@@ -33,7 +33,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
 
       assert index_live
              |> form("#post-form", post: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+             |> render_change() =~ "is invalid"
 
       {:ok, _, html} =
         index_live
@@ -42,7 +42,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
         |> follow_redirect(conn, Routes.post_index_path(conn, :index))
 
       assert html =~ "Post created successfully"
-      assert html =~ "some post_url"
+      assert html =~ "some author"
     end
 
     test "updates post in listing", %{conn: conn, post: post} do
@@ -55,7 +55,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
 
       assert index_live
              |> form("#post-form", post: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+             |> render_change() =~ "is invalid"
 
       {:ok, _, html} =
         index_live
@@ -64,7 +64,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
         |> follow_redirect(conn, Routes.post_index_path(conn, :index))
 
       assert html =~ "Post updated successfully"
-      assert html =~ "some updated post_url"
+      assert html =~ "some updated author"
     end
 
     test "deletes post in listing", %{conn: conn, post: post} do
@@ -82,7 +82,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
       {:ok, _show_live, html} = live(conn, Routes.post_show_path(conn, :show, post))
 
       assert html =~ "Show Post"
-      assert html =~ post.post_url
+      assert html =~ post.author
     end
 
     test "updates post within modal", %{conn: conn, post: post} do
@@ -95,7 +95,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
 
       assert show_live
              |> form("#post-form", post: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+             |> render_change() =~ "is invalid"
 
       {:ok, _, html} =
         show_live
@@ -104,7 +104,7 @@ defmodule HnBookshelfWeb.PostLiveTest do
         |> follow_redirect(conn, Routes.post_show_path(conn, :show, post))
 
       assert html =~ "Post updated successfully"
-      assert html =~ "some updated post_url"
+      assert html =~ "some updated author"
     end
   end
 end

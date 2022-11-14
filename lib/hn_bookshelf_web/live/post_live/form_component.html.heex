@@ -21,6 +21,30 @@
     <%= text_input f, :post_url %>
     <%= error_tag f, :post_url %>
   
+    <%= label f, :author %>
+    <%= text_input f, :author %>
+    <%= error_tag f, :author %>
+  
+    <%= label f, :comment_number %>
+    <%= number_input f, :comment_number %>
+    <%= error_tag f, :comment_number %>
+  
+    <%= label f, :points %>
+    <%= number_input f, :points %>
+    <%= error_tag f, :points %>
+  
+    <%= label f, :virtual_path %>
+    <%= text_input f, :virtual_path %>
+    <%= error_tag f, :virtual_path %>
+  
+    <%= label f, :date_added %>
+    <%= datetime_select f, :date_added %>
+    <%= error_tag f, :date_added %>
+  
+    <%= label f, :date_modified %>
+    <%= datetime_select f, :date_modified %>
+    <%= error_tag f, :date_modified %>
+  
     <div>
       <%= submit "Save", phx_disable_with: "Saving..." %>
     </div>

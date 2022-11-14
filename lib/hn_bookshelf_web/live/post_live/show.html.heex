@@ -30,6 +30,36 @@
     <%= @post.post_url %>
   </li>
 
+  <li>
+    <strong>Author:</strong>
+    <%= @post.author %>
+  </li>
+
+  <li>
+    <strong>Comment number:</strong>
+    <%= @post.comment_number %>
+  </li>
+
+  <li>
+    <strong>Points:</strong>
+    <%= @post.points %>
+  </li>
+
+  <li>
+    <strong>Virtual path:</strong>
+    <%= @post.virtual_path %>
+  </li>
+
+  <li>
+    <strong>Date added:</strong>
+    <%= @post.date_added %>
+  </li>
+
+  <li>
+    <strong>Date modified:</strong>
+    <%= @post.date_modified %>
+  </li>
+
 </ul>
 
 <span><%= live_patch "Edit", to: Routes.post_show_path(@socket, :edit, @post), class: "button" %></span> |

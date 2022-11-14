@@ -19,6 +19,12 @@
       <th>Hn</th>
       <th>Title</th>
       <th>Post url</th>
+      <th>Author</th>
+      <th>Comment number</th>
+      <th>Points</th>
+      <th>Virtual path</th>
+      <th>Date added</th>
+      <th>Date modified</th>
 
       <th></th>
     </tr>
@@ -29,6 +35,12 @@
         <td><%= post.hn_id %></td>
         <td><%= post.title %></td>
         <td><%= post.post_url %></td>
+        <td><%= post.author %></td>
+        <td><%= post.comment_number %></td>
+        <td><%= post.points %></td>
+        <td><%= post.virtual_path %></td>
+        <td><%= post.date_added %></td>
+        <td><%= post.date_modified %></td>
 
         <td>
           <span><%= live_redirect "Show", to: Routes.post_show_path(@socket, :show, post) %></span>

@@ -13,6 +13,9 @@ config :surface, :components, [
 ]
 
 config :hn_bookshelf,
+  hn_api_endpoint: "https://hn.algolia.com/api/v1"
+
+config :hn_bookshelf,
   ecto_repos: [HnBookshelf.Repo]
 
 # Configures the endpoint

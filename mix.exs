@@ -20,7 +20,7 @@ defmodule HnBookshelf.MixProject do
   def application do
     [
       mod: {HnBookshelf.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :inets]
     ]
   end
 
@@ -55,7 +55,8 @@ defmodule HnBookshelf.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:surface_catalogue, "~> 0.5.0"}
+      {:surface_catalogue, "~> 0.5.0"},
+      {:bypass, "~> 2.1", only: :test}
     ]
   end
 

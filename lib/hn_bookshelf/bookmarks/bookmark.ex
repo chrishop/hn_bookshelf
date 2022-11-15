@@ -22,7 +22,7 @@ defmodule HnBookshelf.Bookmark do
 
   def new(bookmark) when is_map(bookmark) do
     %__MODULE__{
-      title: bookmark[:title],
+      title: String.slice(bookmark[:title], 0..254),
       link: bookmark[:link],
       date_added: bookmark[:date_added],
       last_modified: bookmark[:last_modified]
@@ -47,17 +47,45 @@ defmodule HnBookshelf.Bookmark do
     with true <- hn_item(bookmark),
          {:ok, id} <- get_item_id(bookmark),
          {:ok, item} <- HnApi.get_item(id) do
+      title = item[:title] || bookmark.title
+      created_at = DateTime.from_unix!(item[:created_at_i])
+
       bookmark
       |> Map.from_struct()
       |> Map.put(:author, item[:author])
-      |> Map.put(:title, item[:title])
+      |> Map.put(:title, title)
       |> Map.put(:hn_id, item[:id])
       |> Map.put(:points, item[:points])
       |> Map.put(:type, item[:type])
-      |> Map.put(:created_at, DateTime.from_unix!(item[:created_at_i]))
+      |> Map.put(:created_at, created_at)
     else
       _ -> Map.from_struct(bookmark)
     end
+  end
+
+  def to_post_attrs(bookmark = %__MODULE__{}) do
+    %{
+      title: bookmark.title,
+      post_url: URI.to_string(bookmark.link),
+      date_added: bookmark.date_added,
+      date_modified: bookmark.last_modified
+    }
+  end
+
+  def to_post_attrs(enriched_bookmark) when is_map(enriched_bookmark) do
+    %{
+      title: enriched_bookmark[:title],
+      post_url: URI.to_string(enriched_bookmark[:link]),
+      hn_id: enriched_bookmark[:hn_id],
+      author: enriched_bookmark[:author],
+      # TODO need to implement this, will return nil
+      comment_number: enriched_bookmark[:comment_number],
+      points: enriched_bookmark[:points],
+      # virtual_path is decided on later
+      virtual_path: nil,
+      date_added: enriched_bookmark[:date_added],
+      date_modified: enriched_bookmark[:last_modified]
+    }
   end
 
   defp select_bookmarks(document) do

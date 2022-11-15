@@ -15,9 +15,10 @@ defmodule HnBookshelf.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: HnBookshelf.PubSub},
       # Start the Endpoint (http/https)
-      HnBookshelfWeb.Endpoint
+      HnBookshelfWeb.Endpoint,
       # Start a worker by calling: HnBookshelf.Worker.start_link(arg)
       # {HnBookshelf.Worker, arg}
+      {Task.Supervisor, name: HnBookshelf.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

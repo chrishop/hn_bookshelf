@@ -3,6 +3,7 @@ defmodule Mix.Tasks.ParseBookmarks do
 
   alias HnBookshelf.HnApi
   alias HnBookshelf.Bookmark
+  alias HnBookshelf.Bookshelf.Post
 
   def sample_bookmarks() do
     ~s"""
@@ -26,51 +27,30 @@ defmodule Mix.Tasks.ParseBookmarks do
 
   @impl true
   def run(_) do
-    # File.read!(File.cwd!() <> "/priv/static/assets/bookmarks_ddg_20221110.html")
-    sample_bookmarks()
+    Application.ensure_all_started(:hn_bookshelf)
+
+    File.read!(File.cwd!() <> "/priv/static/assets/bookmarks_ddg_20221110.html")
     |> Floki.parse_document!()
-    |> HnBookshelf.Bookmark.parse_bookmarks()
-    |> Enum.map(&enrich/1)
-    |> Enum.filter(&hn_item/1)
-    |> List.first()
-    |> IO.inspect()
+    |> Bookmark.parse_bookmarks()
+    |> Enum.map(fn x -> enrich(x) |> add_to_db() end)
   end
 
-  defp enrich(bookmark = %Bookmark{}) do
-    with true <- hn_item(bookmark),
-         {:ok, id} <- get_item_id(bookmark),
-         {:ok, item} <- HnApi.get_item(id),
-         {:ok, created_at, _offset} <- DateTime.from_iso8601(item[:created_at]) do
-      bookmark
-      |> Map.from_struct()
-      |> Map.put(:author, item[:author])
-      |> Map.put(:title, item[:title])
-      |> Map.put(:hn_id, item[:id])
-      |> Map.put(:points, item[:points])
-      |> Map.put(:type, item[:type])
-      |> Map.put(:created_at, created_at)
-    else
-      _ -> Map.from_struct(bookmark)
-    end
+  defp enrich(b) do
+    IO.inspect(b.title, label: "enriching")
+
+    Bookmark.enrich(b)
+    |> Bookmark.to_post_attrs()
   end
 
-  defp hn_item(bookmark) do
-    link = bookmark.link
-
-    bookmark.link.host == "news.ycombinator.com" and
-      link.path == "/item" and
-      String.match?(link.query, ~r/^id=[0-9]+$/)
-  end
-
-  defp get_item_id(%Bookmark{link: %URI{query: q}}) do
-    decoded_query =
-      URI.query_decoder(q)
-      |> Enum.to_list()
-
-    with [{"id", str_id}] <- decoded_query, {id, _rem} <- Integer.parse(str_id) do
-      {:ok, id}
-    else
-      _ -> {:error, "cannot get item id from bookmark"}
-    end
+  defp add_to_db(attrs) do
+    Post.changeset(%Post{}, attrs)
+    |> then(fn c ->
+      if Enum.empty?(c.errors) do
+        # HnBookshelf.Repo.insert(c)
+        :inserted
+      else
+        IO.inspect(c, label: "changeset error")
+      end
+    end)
   end
 end

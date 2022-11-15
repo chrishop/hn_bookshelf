@@ -1,18 +1,9 @@
 defmodule HnBookshelf.HnApiTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
+
+  import Test.Support.Helper
 
   alias HnBookshelf.HnApi
-
-  def set_env(app, key, new_value) do
-    original_value = Application.get_env(app, key)
-    Application.put_env(app, key, new_value)
-
-    on_exit(fn -> Application.put_env(app, key, original_value) end)
-  end
-
-  def localhost(port) do
-    "http://localhost:#{port}/api/v1"
-  end
 
   describe "get_items/1" do
     setup do
@@ -20,19 +11,12 @@ defmodule HnBookshelf.HnApiTest do
 
       set_env(:hn_bookshelf, :hn_api_endpoint, localhost(bypass.port))
 
-      Bypass.expect_once(
-        bypass,
-        "GET",
-        "api/v1/items/1",
-        fn conn ->
-          Plug.Conn.resp(
-            conn,
-            200,
-            File.read!(File.cwd!() <> "/test/support/fixtures/item_1.json")
-          )
-        end
+      bypass_expect(bypass,
+        path: "/api/v1/items/1",
+        resp_body_fixture: "/test/support/fixtures/item_1.json"
       )
 
+      on_exit(fn -> Bypass.down(bypass) end)
       :ok
     end
 

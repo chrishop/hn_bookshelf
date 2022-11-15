@@ -1,4 +1,6 @@
 defmodule HnBookshelf.HnApi do
+  require Logger
+
   def get_item(item_id) when is_integer(item_id) do
     id_as_string = Integer.to_string(item_id)
 
@@ -6,7 +8,9 @@ defmodule HnBookshelf.HnApi do
          {:ok, item_map} <- Jason.decode(body, keys: :atoms) do
       {:ok, item_map}
     else
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        Logger.error("get_item/1 failed with reason: #{inspect(reason)}")
+        {:error, reason}
     end
   end
 
@@ -46,7 +50,7 @@ defmodule HnBookshelf.HnApi do
     end
   end
 
-  def endpoint() do
+  defp endpoint() do
     Application.get_env(:hn_bookshelf, :hn_api_endpoint)
   end
 end

@@ -1,5 +1,6 @@
 defmodule HnBookshelf.Bookmark do
   alias HnBookshelf.HnApi
+  alias HnBookshelf.Utils.MapList
 
   @type t :: %__MODULE__{
           title: String.t(),
@@ -48,6 +49,7 @@ defmodule HnBookshelf.Bookmark do
          {:ok, id} <- get_item_id(bookmark),
          {:ok, item} <- HnApi.get_item(id) do
       title = item[:title] || bookmark.title
+      link = if item[:url], do: URI.parse(item[:url]), else: bookmark.link
       created_at = DateTime.from_unix!(item[:created_at_i])
 
       bookmark
@@ -55,12 +57,20 @@ defmodule HnBookshelf.Bookmark do
       |> Map.put(:author, item[:author])
       |> Map.put(:title, title)
       |> Map.put(:hn_id, item[:id])
+      |> Map.put(:link, link)
       |> Map.put(:points, item[:points])
       |> Map.put(:type, item[:type])
       |> Map.put(:created_at, created_at)
     else
       _ -> Map.from_struct(bookmark)
     end
+  end
+
+  def merge_duplicates(enriched_bookmarks) do
+    enriched_bookmarks
+    |> map_by_link()
+    |> IO.inspect(label: "map_by_link")
+    |> do_merge_duplicates()
   end
 
   def to_post_attrs(bookmark = %__MODULE__{}) do
@@ -181,6 +191,51 @@ defmodule HnBookshelf.Bookmark do
       {:ok, id}
     else
       _ -> {:error, "cannot get item id from bookmark"}
+    end
+  end
+
+  defp map_by_link(enriched_bookmarks) do
+    IO.inspect(enriched_bookmarks, label: "IN map_by_link, bookmarks")
+
+    Enum.reduce(
+      enriched_bookmarks,
+      %{},
+      fn b, acc ->
+        MapList.put(acc, URI.to_string(b[:link]), b)
+      end
+    )
+  end
+
+  defp do_merge_duplicates(link_map) do
+    Enum.reduce(link_map, [], fn {_link, bookmark_list}, acc ->
+      case bookmark_list do
+        [bookmark] ->
+          [bookmark | acc]
+
+        _ ->
+          IO.inspect(bookmark_list, label: "duplicate found")
+          [merge_bookmark_list(bookmark_list) | acc]
+      end
+    end)
+  end
+
+  defp merge_bookmark_list(bookmark_list) do
+    Enum.reduce(bookmark_list, fn b, acc -> merge_bookmarks(b, acc) end)
+  end
+
+  defp merge_bookmarks(a, b) do
+    case {hn_bookmark?(a), hn_bookmark?(b)} do
+      {true, false} -> Map.merge(b, a)
+      {false, true} -> Map.merge(a, b)
+      _ -> a
+    end
+  end
+
+  def hn_bookmark?(bookmark) do
+    if bookmark[:hn_id] && bookmark[:author] && bookmark[:points] do
+      true
+    else
+      false
     end
   end
 end

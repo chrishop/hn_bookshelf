@@ -155,4 +155,29 @@ defmodule HnBookshelf.BookmarkTest do
              } = Bookmark.enrich(bookmark)
     end
   end
+
+  describe "merge_duplicates/1" do
+    test "can parse single hn bookmark" do
+      hn_bookmark = %{
+        title: "hn_bookmark",
+        hn_id: 1234,
+        author: "hn_chris",
+        points: 42,
+        link: URI.parse("https://example.com"),
+        date_addded: DateTime.now!("Etc/UTC"),
+        last_modified: DateTime.now!("Etc/UTC")
+      }
+
+      Bookmark.merge_duplicates([hn_bookmark]) == hn_bookmark
+    end
+
+    # test "can parse single non hn bookmark" do
+    # end
+
+    # test "will merge hn & non hn bookmark with same link, hn values take precedence" do
+    # end
+
+    # test "will not merge bookmarks that don't have the same link" do
+    # end
+  end
 end

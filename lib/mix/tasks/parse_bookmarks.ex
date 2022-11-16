@@ -30,16 +30,30 @@ defmodule Mix.Tasks.ParseBookmarks do
     Application.ensure_all_started(:hn_bookshelf)
 
     File.read!(File.cwd!() <> "/priv/static/assets/bookmarks_ddg_20221110.html")
+    # sample_bookmarks()
     |> Floki.parse_document!()
     |> Bookmark.parse_bookmarks()
-    |> Enum.map(fn x -> enrich(x) |> add_to_db() end)
+    |> then(fn b ->
+      Task.Supervisor.async_stream(HnBookshelf.TaskSupervisor, b, fn x -> enrich(x) end,
+        timeout: :infinity
+      )
+    end)
+    |> Stream.map(fn {:ok, m} -> m end)
+    |> Stream.take(200)
+    |> Enum.to_list()
+    |> merge_duplicates()
+    |> Enum.map(&Bookmark.to_post_attrs/1)
+    |> Enum.map(&add_to_db/1)
   end
 
   defp enrich(b) do
     IO.inspect(b.title, label: "enriching")
 
     Bookmark.enrich(b)
-    |> Bookmark.to_post_attrs()
+  end
+
+  defp merge_duplicates(bl) do
+    Bookmark.merge_duplicates(bl)
   end
 
   defp add_to_db(attrs) do

@@ -156,28 +156,63 @@ defmodule HnBookshelf.BookmarkTest do
     end
   end
 
+  @hn_bookmark %{
+    title: "hn_bookmark",
+    hn_id: 1234,
+    author: "hn_chris",
+    points: 42,
+    link: URI.parse("https://some-site.com"),
+    date_added: DateTime.now!("Etc/UTC"),
+    last_modified: DateTime.now!("Etc/UTC")
+  }
+
+  @non_hn_bookmark %{
+    title: "some_other_site",
+    link: URI.parse("https://some-other-site.com"),
+    date_added: DateTime.now!("Etc/UTC"),
+    last_modified: DateTime.now!("Etc/UTC")
+  }
+
   describe "merge_duplicates/1" do
     test "can parse single hn bookmark" do
-      hn_bookmark = %{
-        title: "hn_bookmark",
-        hn_id: 1234,
-        author: "hn_chris",
-        points: 42,
-        link: URI.parse("https://example.com"),
-        date_addded: DateTime.now!("Etc/UTC"),
-        last_modified: DateTime.now!("Etc/UTC")
-      }
-
-      Bookmark.merge_duplicates([hn_bookmark]) == hn_bookmark
+      assert Bookmark.merge_duplicates([@hn_bookmark]) == [@hn_bookmark]
     end
 
-    # test "can parse single non hn bookmark" do
-    # end
+    test "can parse single non hn bookmark" do
+      assert Bookmark.merge_duplicates([@non_hn_bookmark]) == [@non_hn_bookmark]
+    end
 
-    # test "will merge hn & non hn bookmark with same link, hn values take precedence" do
-    # end
+    test "will merge hn & non hn bookmark with same link, hn values take precedence" do
+      hn_uri = URI.parse("https://www.ycombinator.com/")
 
-    # test "will not merge bookmarks that don't have the same link" do
-    # end
+      hn_bookmark = %{@hn_bookmark | link: hn_uri}
+      non_hn_bookmark = %{@non_hn_bookmark | link: hn_uri}
+
+      assert [
+               %{
+                 title: "hn_bookmark",
+                 hn_id: 1234,
+                 author: "hn_chris",
+                 points: 42,
+                 link: ^hn_uri,
+                 date_added: _date_added,
+                 last_modified: _date_modified
+               }
+             ] = Bookmark.merge_duplicates([hn_bookmark, non_hn_bookmark])
+    end
+
+    test "will not merge bookmarks that don't have the same link" do
+      bookmark_with_different_link = %{
+        @hn_bookmark
+        | link: URI.parse("https://some-other-site.com")
+      }
+
+      bookmark_list = [
+        @hn_bookmark,
+        bookmark_with_different_link
+      ]
+
+      assert Bookmark.merge_duplicates(bookmark_list) == bookmark_list
+    end
   end
 end

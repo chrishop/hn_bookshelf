@@ -41,7 +41,7 @@ defmodule Mix.Tasks.ParseBookmarks do
     |> Stream.map(fn {:ok, m} -> m end)
     |> Stream.take(200)
     |> Enum.to_list()
-    |> merge_duplicates()
+    |> Bookmark.merge_duplicates()
     |> Enum.map(&Bookmark.to_post_attrs/1)
     |> Enum.map(&add_to_db/1)
   end
@@ -50,10 +50,6 @@ defmodule Mix.Tasks.ParseBookmarks do
     IO.inspect(b.title, label: "enriching")
 
     Bookmark.enrich(b)
-  end
-
-  defp merge_duplicates(bl) do
-    Bookmark.merge_duplicates(bl)
   end
 
   defp add_to_db(attrs) do

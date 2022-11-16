@@ -2,6 +2,8 @@ defmodule HnBookshelf.Bookmark do
   alias HnBookshelf.HnApi
   alias HnBookshelf.Utils.MapList
 
+  require Logger
+
   @type t :: %__MODULE__{
           title: String.t(),
           link: URI.t(),
@@ -69,7 +71,6 @@ defmodule HnBookshelf.Bookmark do
   def merge_duplicates(enriched_bookmarks) do
     enriched_bookmarks
     |> map_by_link()
-    |> IO.inspect(label: "map_by_link")
     |> do_merge_duplicates()
   end
 
@@ -111,7 +112,7 @@ defmodule HnBookshelf.Bookmark do
         do_parse_bookmarks(rest, [b | acc])
 
       {:error, reason} ->
-        IO.inspect("""
+        Logger.error("""
         cannot parse bookmark with reason: #{reason}, bookmark:
         #{inspect(bookmark)}
         """)
@@ -195,8 +196,6 @@ defmodule HnBookshelf.Bookmark do
   end
 
   defp map_by_link(enriched_bookmarks) do
-    IO.inspect(enriched_bookmarks, label: "IN map_by_link, bookmarks")
-
     Enum.reduce(
       enriched_bookmarks,
       %{},
@@ -213,7 +212,11 @@ defmodule HnBookshelf.Bookmark do
           [bookmark | acc]
 
         _ ->
-          IO.inspect(bookmark_list, label: "duplicate found")
+          Logger.info("""
+          Merging duplicates:
+            #{inspect(bookmark_list)}
+          """)
+
           [merge_bookmark_list(bookmark_list) | acc]
       end
     end)

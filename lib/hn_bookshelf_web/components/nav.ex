@@ -8,7 +8,7 @@ defmodule HnBookshelfWeb.Components.Nav do
     ~F"""
     <nav class="bg-hn-orange flex flex-row content-center place-items-center p-0.5">
       <div class="place-self-center  mr-1">
-        <img class="border border-white" src={hn_logo()}/>
+        <a href="/front_page"><img class="border border-white" src={hn_logo()}/></a>
       </div>
       <span class="inline-flex">
         <b class="mr-[10px] font-hn text-[10pt]">Hacker News</b>

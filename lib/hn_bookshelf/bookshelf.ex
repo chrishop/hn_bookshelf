@@ -37,6 +37,17 @@ defmodule HnBookshelf.Bookshelf do
   """
   def get_post!(id), do: Repo.get!(Post, id)
 
+  def get_post_page(page_no, item_per_page \\ 30) when is_integer(page_no) and page_no >= 1 do
+    offset = page_no * item_per_page
+
+    Post
+    |> where([p], is_nil(p.virtual_path))
+    |> order_by([p], p.date_added)
+    |> limit(^item_per_page)
+    |> offset(^offset)
+    |> Repo.all()
+  end
+
   @doc """
   Creates a post.
 

@@ -37,11 +37,18 @@ defmodule HnBookshelf.Bookshelf do
   """
   def get_post!(id), do: Repo.get!(Post, id)
 
-  def get_post_page(page_no, item_per_page \\ 30) when is_integer(page_no) and page_no >= 1 do
-    offset = page_no * item_per_page
+  def get_post_page(page_no, folder, item_per_page \\ 30)
+      when is_integer(page_no) and page_no >= 1 do
+    offset = (page_no - 1) * item_per_page
 
-    Post
-    |> where([p], is_nil(p.virtual_path))
+    post_with_folder =
+      if folder do
+        where(Post, [p], p.virtual_path == ^folder)
+      else
+        where(Post, [p], is_nil(p.virtual_path))
+      end
+
+    post_with_folder
     |> order_by([p], p.date_added)
     |> limit(^item_per_page)
     |> offset(^offset)
@@ -81,6 +88,12 @@ defmodule HnBookshelf.Bookshelf do
   def update_post(%Post{} = post, attrs) do
     post
     |> Post.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_folder(post = %Post{}, folder) do
+    post
+    |> Post.folder_changeset(%{virtual_path: folder})
     |> Repo.update()
   end
 

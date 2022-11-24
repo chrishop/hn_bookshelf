@@ -49,4 +49,11 @@ defmodule HnBookshelf.Bookshelf.Post do
     |> validate_length(:title, max: 255)
     |> validate_length(:virtual_path, max: 255)
   end
+
+  def folder_changeset(post, attrs) do
+    post
+    |> cast(attrs, [:virtual_path])
+    |> validate_required([:virtual_path])
+    |> validate_length(:virtual_path, max: 255)
+  end
 end

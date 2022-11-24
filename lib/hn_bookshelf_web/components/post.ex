@@ -26,7 +26,7 @@ defmodule HnBookshelfWeb.Components.Post do
         </div>
       </div>
       <div class="text-[7pt] font-hn text-hn-grey-2 ml-8">
-          {@post.points} points by {@post.author} 1 hour ago | hide | {@post.comment_number} <a href={@post.comment_link}>comments</a>
+          {@post.points} points by {@post.author} 1 hour ago | hide | {@post.comment_number} <a href={@post.comment_link}>comments</a> | <a phx-click="to_now" phx-value-id={@post.id}>now</a> | <a phx-click="to_keep" phx-value-id={@post.id}>keep</a> | <a phx-click="to_bin" phx-value-id={@post.id}>bin</a>
       </div>
       <div class="h-[5px]"></div>
     </div>

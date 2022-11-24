@@ -30,7 +30,7 @@ defmodule HnBookshelfWeb.Router do
     live "/post/:id/show/edit", PostLive.Show, :edit
 
     live "/front_page", FrontPage
-    live "/posts/page/:page_no", FrontPage
+    live "/posts/page/:folder/:page_no", FrontPage
   end
 
   # Other scopes may use custom stacks.

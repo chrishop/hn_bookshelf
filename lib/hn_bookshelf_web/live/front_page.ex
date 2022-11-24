@@ -16,11 +16,14 @@ defmodule HnBookshelfWeb.FrontPage do
 
   def mount(params, _session, socket) do
     page_no = get_page_no(params)
-    posts = fetch_page_posts(page_no)
+    folder = get_folder(params)
+    posts = fetch_page_posts(folder, page_no)
 
     socket =
       socket
-      |> assign(:next_page, next_page(page_no))
+      |> assign(:folder, folder)
+      |> assign(:page_no, page_no)
+      |> assign(:next_page, next_page(folder, page_no))
       |> assign(:posts, posts)
 
     {:ok, socket}
@@ -28,14 +31,37 @@ defmodule HnBookshelfWeb.FrontPage do
 
   def handle_params(params, _, socket) do
     page_no = get_page_no(params)
-    posts = fetch_page_posts(page_no)
+    folder = get_folder(params)
+    posts = fetch_page_posts(folder, page_no)
 
     socket =
       socket
-      |> assign(:next_page, next_page(page_no))
+      |> assign(:folder, folder)
+      |> assign(:page_no, page_no)
+      |> assign(:next_page, next_page(folder, page_no))
       |> assign(:posts, posts)
 
     {:noreply, socket}
+  end
+
+  def handle_event("to_" <> folder, %{"id" => id}, socket) do
+    IO.inspect(folder, label: "FOLDER")
+    page_folder = socket.assigns.folder
+    page_no = socket.assigns.page_no
+
+    update_folder(id, folder) |> IO.inspect()
+
+    posts = fetch_page_posts(page_folder, page_no)
+
+    socket =
+      socket
+      |> assign(:posts, posts)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(_event, _unsigned_params, socket) do
+    {:no_reply, socket}
   end
 
   defp get_page_no(params) do
@@ -48,18 +74,35 @@ defmodule HnBookshelfWeb.FrontPage do
     end
   end
 
-  defp next_page(current_page) do
-    "/posts/page/#{current_page + 1}"
+  defp get_folder(params) do
+    Map.get(params, "folder", "new")
   end
 
-  defp fetch_page_posts(page_no, post_per_page \\ 30) do
+  defp update_folder(id, folder) do
+    post = HnBookshelf.Bookshelf.get_post!(id)
+
+    HnBookshelf.Bookshelf.update_folder(post, folder)
+  end
+
+  defp next_page(folder, current_page) do
+    "/posts/page/#{folder}/#{current_page + 1}"
+  end
+
+  defp fetch_page_posts(folder, page_no, post_per_page \\ 30) do
     numbers = page_post_numbers(page_no, post_per_page)
 
     posts =
-      HnBookshelf.Bookshelf.get_post_page(page_no, post_per_page)
-      |> Enum.map(&post_view/1)
+      case folder do
+        "new" ->
+          HnBookshelf.Bookshelf.get_post_page(page_no, nil, post_per_page)
 
-    Enum.zip(numbers, posts)
+        folder ->
+          HnBookshelf.Bookshelf.get_post_page(page_no, folder, post_per_page)
+      end
+
+    posts_view = Enum.map(posts, &post_view/1)
+
+    Enum.zip(numbers, posts_view)
   end
 
   @spec page_post_numbers(number, integer) :: list

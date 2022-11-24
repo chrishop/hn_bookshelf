@@ -12,7 +12,7 @@ defmodule HnBookshelfWeb.Components.Nav do
       </div>
       <span class="inline-flex">
         <b class="mr-[10px] font-hn text-[10pt]">Hacker News</b>
-        <p class="font-hn text-[10pt]">new | threads | past | comments | ask | show | jobs | submit</p>
+        <p class="font-hn text-[10pt]"><a href="/posts/page/new/1">new</a> | <a href="/posts/page/now/1">now</a> | <a href="/posts/page/keep/1">keep</a> | <a href="/posts/page/bin/1">bin</a> | comments | ask | show | jobs | submit</p>
       </span>
       <div class="font-hn text-[10pt] ml-auto pr-1">
         login
